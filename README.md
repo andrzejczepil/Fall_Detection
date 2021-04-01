@@ -8,4 +8,5 @@ Note: keep in mind that only selected libraries work well with the code. some up
 
 
 FILES:
-.ino "fall detection" is a complete file including translated to base_64 webpage to be displayed. Included libraries are necessary for the project to work.
+.ino file "fall detection system" is a complete file including translated to base_64 webpage to be displayed. Included libraries are necessary for the project to work.
+DANE.h consists of info about wifi network the device should be connected to.
