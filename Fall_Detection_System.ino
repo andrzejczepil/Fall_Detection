@@ -1,3 +1,7 @@
+/*in order to work, please remember to change phone number "+48100200300" to a correct emergency number. 
+webpage_base64[] is a file "stona.html" converted in base64 format. 
+Don't forget to fill "Dane.h" file with your ssid and pass for wifi*/
+
 #include <WiFiNINA.h>
 #include <Arduino_LSM6DS3.h>
 #include <Wire.h>
