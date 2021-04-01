@@ -5,3 +5,7 @@ It is a wearable-free fall detection system, dedicated to the elderly and those 
 This project shows application of websockets technology for live displaying online graph of a subjects movement. 
 
 Note: keep in mind that only selected libraries work well with the code. some updated ones seem to fail during compilation or work improperly.
+
+
+FILES:
+.ino "fall detection" is a complete file including translated to base_64 webpage to be displayed. Included libraries are necessary for the project to work.
