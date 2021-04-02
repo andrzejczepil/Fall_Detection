@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        body {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-family: Arial;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        p {
+            font-family: Arial;
+        }
+
+        .connection svg {
+            vertical-align: bottom;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>System detekcji upadku i zdarzen niebezpiecznych dla osob starszych i chorych - Czepil Andrzej 165431</h2>
+    <div id="connection" class="connection" style="height:40px;"></div>
+    <div id="chart-acc" class="container"></div>
+    <br>
+    <form>
+        <input type="button" value="Podaj status" name="switch" onclick="talk(name, checked)">
+    </form>
+    <br>
+    <textarea name="servermessages" id="servermessages" class="servermessages" rows="10" cols="73"
+        style="width:40%; height:20%; float: left;" readonly></textarea>
+    <textarea name="alert" id="alert" class="alert" rows="10" cols="73" style="width:40%; height:20%; float: right;"
+        readonly></textarea>
+
+</body>
+<script>
+    var server = "http://" + window.location.hostname;
+
+    const port = window.location.port;
+
+    if (port != "") {
+        server += ":" + port;
+    }
+    server += "/";
+
+    var chartT = new Highcharts.Chart({
+        chart: { renderTo: 'chart-acc' },
+        title: { text: 'Wykres Acc(t)' },
+        series: [{
+            showInLegend: false,
+            data: []
+        }],
+        plotOptions: {
+            line: {
+                animation: false,
+                dataLabels: { enabled: true }
+            },
+            series: { color: '#059e8a' }
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: { second: '%H:%M:%S' }
+        },
+        yAxis: {
+            title: { text: 'przyspieszenie' }
+        },
+        credits: { enabled: false }
+    });
+
+    const evtSource = new EventSource(server);
+
+    document.getElementById("connection").innerHTML = '<p style="color:#FFA500;"><svg fill="none" version="1.1" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12 17.435c-0.9281 0-1.68 0.7548-1.68 1.6811 0 0.9262 0.7519 1.6776 1.68 1.6776 0.9274 0 1.68-0.7514 1.68-1.6776 0-0.9263-0.7526-1.6811-1.68-1.6811zm11.744-7.9502c-2.9324-3.4845-7.2128-5.4847-11.743-5.4847-4.5306 0-8.8119 2.0002-11.744 5.4847-0.38904 0.46375-0.32785 1.1548 0.13607 1.5437 0.20274 0.1716 0.45297 0.2565 0.70228 0.2565 0.31416 0 0.62466-0.1315 0.83836-0.388 2.5151-2.9924 6.1827-4.7078 10.068-4.7078 3.8813 0 7.5516 1.7153 10.067 4.7042 0.2137 0.2601 0.5242 0.3916 0.8384 0.3916 0.2493 0 0.4995-0.0849 0.7032-0.2565 0.463-0.3889 0.5242-1.08 0.1351-1.5437zm-11.743-1.1019c-3.2356 0-6.2932 1.4259-8.3872 3.9154-0.38904 0.4638-0.33151 1.1548 0.13242 1.5437 0.20639 0.1716 0.45662 0.2565 0.70594 0.2565 0.3105 0 0.62101-0.1314 0.83836-0.3879 1.6767-1.9938 4.1206-3.1386 6.7105-3.1386 2.59 0 5.0329 1.1448 6.7096 3.1386 0.2183 0.2565 0.5279 0.3879 0.8384 0.3879 0.2502 0 0.4995-0.0812 0.7068-0.2565 0.464-0.3889 0.5242-1.0799 0.1315-1.5437-2.094-2.4894-5.1507-3.9154-8.3863-3.9154zm0 4.3828c-1.9443 0-3.7781 0.8554-5.0338 2.3498-0.38904 0.4601-0.32785 1.1512 0.13516 1.5401 0.20366 0.1752 0.45297 0.2574 0.7032 0.2574 0.31416 0 0.62375-0.1324 0.84201-0.3889 0.83471-0.9987 2.0584-1.5693 3.3534-1.5693s2.5178 0.5706 3.3525 1.5693c0.2183 0.2565 0.5288 0.3889 0.842 0.3889 0.2503 0 0.4996-0.0822 0.7032-0.2574 0.464-0.3889 0.5242-1.08 0.1352-1.5401-1.2557-1.4944-3.0886-2.3498-5.0329-2.3498z" clip-rule="evenodd" fill="#FFA500" fill-rule="evenodd"><animate attributeName="fill-opacity" attributeType="XML" dur="0.2s" repeatCount="indefinite" values="1;0"/></path></svg> Lacze ...</p>';
+
+    evtSource.onopen = function (m) {
+        document.getElementById("connection").innerHTML = '<p style="color:#00A45B;"><svg fill="none" version="1.1" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12 17.435c-0.9281 0-1.68 0.7548-1.68 1.6811 0 0.9262 0.7519 1.6776 1.68 1.6776 0.9274 0 1.68-0.7514 1.68-1.6776 0-0.9263-0.7526-1.6811-1.68-1.6811zm11.744-7.9502c-2.9324-3.4845-7.2128-5.4847-11.743-5.4847-4.5306 0-8.8119 2.0002-11.744 5.4847-0.38904 0.46375-0.32785 1.1548 0.13607 1.5437 0.20274 0.1716 0.45297 0.2565 0.70228 0.2565 0.31416 0 0.62466-0.1315 0.83836-0.388 2.5151-2.9924 6.1827-4.7078 10.068-4.7078 3.8813 0 7.5516 1.7153 10.067 4.7042 0.2137 0.2601 0.5242 0.3916 0.8384 0.3916 0.2493 0 0.4995-0.0849 0.7032-0.2565 0.463-0.3889 0.5242-1.08 0.1351-1.5437zm-11.743-1.1019c-3.2356 0-6.2932 1.4259-8.3872 3.9154-0.38904 0.4638-0.33151 1.1548 0.13242 1.5437 0.20639 0.1716 0.45662 0.2565 0.70594 0.2565 0.3105 0 0.62101-0.1314 0.83836-0.3879 1.6767-1.9938 4.1206-3.1386 6.7105-3.1386 2.59 0 5.0329 1.1448 6.7096 3.1386 0.2183 0.2565 0.5279 0.3879 0.8384 0.3879 0.2502 0 0.4995-0.0812 0.7068-0.2565 0.464-0.3889 0.5242-1.0799 0.1315-1.5437-2.094-2.4894-5.1507-3.9154-8.3863-3.9154zm0 4.3828c-1.9443 0-3.7781 0.8554-5.0338 2.3498-0.38904 0.4601-0.32785 1.1512 0.13516 1.5401 0.20366 0.1752 0.45297 0.2574 0.7032 0.2574 0.31416 0 0.62375-0.1324 0.84201-0.3889 0.83471-0.9987 2.0584-1.5693 3.3534-1.5693s2.5178 0.5706 3.3525 1.5693c0.2183 0.2565 0.5288 0.3889 0.842 0.3889 0.2503 0 0.4996-0.0822 0.7032-0.2574 0.464-0.3889 0.5242-1.08 0.1352-1.5401-1.2557-1.4944-3.0886-2.3498-5.0329-2.3498z" clip-rule="evenodd" fill="#00A45B" fill-rule="evenodd"/></svg> Polaczono</p>';
+        document.getElementById("alert").innerHTML += "MONITOROWANIE\n";
+        document.getElementById("alert").scrollTop = document.getElementById("alert").scrollHeight;
+    }
+
+    evtSource.onerror = function (m) {
+        document.getElementById("connection").innerHTML = '<p style="color:#F75535;"><svg fill="none" version="1.1" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12 17.435c-0.9281 0-1.68 0.7548-1.68 1.6811 0 0.9262 0.7519 1.6776 1.68 1.6776 0.9274 0 1.68-0.7514 1.68-1.6776 0-0.9263-0.7526-1.6811-1.68-1.6811zm11.744-7.9502c-2.9324-3.4845-7.2128-5.4847-11.743-5.4847-4.5306 0-8.8119 2.0002-11.744 5.4847-0.38904 0.46375-0.32785 1.1548 0.13607 1.5437 0.20274 0.1716 0.45297 0.2565 0.70228 0.2565 0.31416 0 0.62466-0.1315 0.83836-0.388 2.5151-2.9924 6.1827-4.7078 10.068-4.7078 3.8813 0 7.5516 1.7153 10.067 4.7042 0.2137 0.2601 0.5242 0.3916 0.8384 0.3916 0.2493 0 0.4995-0.0849 0.7032-0.2565 0.463-0.3889 0.5242-1.08 0.1351-1.5437zm-11.743-1.1019c-3.2356 0-6.2932 1.4259-8.3872 3.9154-0.38904 0.4638-0.33151 1.1548 0.13242 1.5437 0.20639 0.1716 0.45662 0.2565 0.70594 0.2565 0.3105 0 0.62101-0.1314 0.83836-0.3879 1.6767-1.9938 4.1206-3.1386 6.7105-3.1386 2.59 0 5.0329 1.1448 6.7096 3.1386 0.2183 0.2565 0.5279 0.3879 0.8384 0.3879 0.2502 0 0.4995-0.0812 0.7068-0.2565 0.464-0.3889 0.5242-1.0799 0.1315-1.5437-2.094-2.4894-5.1507-3.9154-8.3863-3.9154zm0 4.3828c-1.9443 0-3.7781 0.8554-5.0338 2.3498-0.38904 0.4601-0.32785 1.1512 0.13516 1.5401 0.20366 0.1752 0.45297 0.2574 0.7032 0.2574 0.31416 0 0.62375-0.1324 0.84201-0.3889 0.83471-0.9987 2.0584-1.5693 3.3534-1.5693s2.5178 0.5706 3.3525 1.5693c0.2183 0.2565 0.5288 0.3889 0.842 0.3889 0.2503 0 0.4996-0.0822 0.7032-0.2574 0.464-0.3889 0.5242-1.08 0.1352-1.5401-1.2557-1.4944-3.0886-2.3498-5.0329-2.3498z" clip-rule="evenodd" fill="#F75535" fill-rule="evenodd"/></svg> Rozlaczono</p>';
+        document.getElementById("alert").innerHTML += "BRAK MONITOROWANIA";
+        document.getElementById("alert").scrollTop = document.getElementById("alert").scrollHeight;
+        evtSource.close();
+    }
+    evtSource.addEventListener("gravity", function (m) {
+        var x = (new Date()).getTime(),
+            y = parseFloat(m.data);
+        if (chartT.series[0].data.length > 200) {
+            chartT.series[0].addPoint([x, y], true, true, true);
+        } else {
+            chartT.series[0].addPoint([x, y], true, false, true);
+        }
+    });
+    evtSource.onmessage = function (m) {
+        document.getElementById("servermessages").innerHTML += m.data + "\n";
+        document.getElementById("servermessages").scrollTop = document.getElementById("servermessages").scrollHeight;
+    }
+    evtSource.addEventListener("alert", function (m) {
+        var alercik = parseFloat(m.data);
+        if (alercik >= 1 && alercik<2) {
+            document.getElementById("alert").innerHTML += "OSOBA UPADLA !\n";
+            document.getElementById("alert").scrollTop = document.getElementById("alert").scrollHeight;
+        } else if (alercik >= 2){
+            document.getElementById("alert").innerHTML += "OSOBA W RUCHU !\n";
+            document.getElementById("alert").scrollTop = document.getElementById("alert").scrollHeight;
+        }
+        else{
+            document.getElementById("alert").innerHTML += "OSOBA W BEZRUCHU\n";
+            document.getElementById("alert").scrollTop = document.getElementById("alert").scrollHeight;
+        }
+    });
+    function talk(name, value) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("HEAD", server + "?" + name, false);
+        try {
+            xhr.send(null);
+        } catch (e) {
+            evtSource.onerror(e);
+        }
+    }
+    window.addEventListener("beforeunload", closeAll, false);
+    function closeAll() {
+        evtSource.close();
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", server, false);
+        try {
+            xhr.send(null);
+        } catch (e) { }
+    }
+
+</script>
+
+</html>
